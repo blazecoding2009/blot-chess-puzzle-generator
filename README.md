@@ -1,0 +1,1 @@
+# Blot Chess Puzzle Generator
