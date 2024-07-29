@@ -1,253 +1,44 @@
 const initialBoard = [
-  "rnbqkbnr",
-  "pppppppp",
-  "        ",
-  "        ",
-  "        ",
-  "        ",
-  "PPPPPPPP",
-  "RNBQKBNR",
-];
-
-const width = 200;
-const height = 200;
-const gridSize = 8;
-const squareSize = width / gridSize;
-const pieces = {
-  K: drawKing,
-  Q: drawQueen,
-  R: drawRook,
-  B: drawBishop,
-  N: drawKnight,
-  P: drawPawn,
-  k: drawKingFilled,
-  q: drawQueenFilled,
-  r: drawRookFilled,
-  b: drawBishopFilled,
-  n: drawKnightFilled,
-  p: drawPawnFilled,
+    "rnbqkbnr", "pppppppp", "        ", "        ",
+    "        ", "        ", "PPPPPPPP", "RNBQKBNR",
+  ];
+const width = 200, height = 200, gridSize = 8, squareSize = width / gridSize;
+const finalLines = [], pieces = {
+    K: drawPiece, Q: drawPiece, R: drawPiece, B: drawPiece,
+    N: drawPiece, P: drawPiece, k: drawPieceFilled,
+    q: drawPieceFilled, r: drawPieceFilled,
+    b: drawPieceFilled, n: drawPieceFilled, p: drawPieceFilled
 };
-const finalLines = [];
-
+  
 setDocDimensions(width, height);
-
-for (let x = 0; x <= gridSize; x++) {
-  finalLines.push([
-    [x * squareSize, 0],
-    [x * squareSize, height],
-  ]);
-}
-
-for (let y = 0; y <= gridSize; y++) {
-  finalLines.push([
-    [0, y * squareSize],
-    [width, y * squareSize],
-  ]);
-}
-
+  
+for (let x = 0; x <= gridSize; x++) finalLines.push([[x * squareSize, 0], [x * squareSize, height]]);
+for (let y = 0; y <= gridSize; y++) finalLines.push([[0, y * squareSize], [width, y * squareSize]]);
+  
 for (let row = 0; row < 8; row++) {
-  for (let col = 0; col < 8; col++) {
-    const x = col * squareSize;
-    const y = row * squareSize;
-    const piece = initialBoard[row][col];
-    if (piece !== " " && pieces[piece]) {
-      pieces[piece](x, y, squareSize);
+   for (let col = 0; col < 8; col++) {
+        const piece = initialBoard[row][col];
+        if (piece !== " " && pieces[piece]) pieces[piece](col * squareSize, row * squareSize, squareSize, piece.toUpperCase());
     }
-  }
 }
-
-function drawKing(x, y, size) {
-  const polyline = [
-    [x + size * 0.5, y + size * 0.1],
-    [x + size * 0.4, y + size * 0.3],
-    [x + size * 0.6, y + size * 0.3],
-    [x + size * 0.5, y + size * 0.1],
-    [x + size * 0.3, y + size * 0.4],
-    [x + size * 0.7, y + size * 0.4],
-    [x + size * 0.3, y + size * 0.7],
-    [x + size * 0.7, y + size * 0.7],
-    [x + size * 0.3, y + size * 0.9],
-    [x + size * 0.7, y + size * 0.9],
-  ];
-  finalLines.push(polyline);
+  
+function drawPiece(x, y, size, type) {
+    const templates = {
+        K: [[0.5, 0.1], [0.4, 0.3], [0.6, 0.3], [0.5, 0.1], [0.3, 0.4], [0.7, 0.4], [0.3, 0.7], [0.7, 0.7], [0.3, 0.9], [0.7, 0.9]],
+        Q: [[0.5, 0.1], [0.4, 0.3], [0.6, 0.3], [0.5, 0.1], [0.3, 0.4], [0.7, 0.4], [0.5, 0.5], [0.3, 0.9], [0.7, 0.9]],
+        R: [[0.3, 0.1], [0.7, 0.1], [0.7, 0.3], [0.3, 0.3], [0.3, 0.7], [0.7, 0.7], [0.7, 0.9], [0.3, 0.9], [0.3, 0.1]],
+        B: [[0.5, 0.1], [0.4, 0.2], [0.6, 0.2], [0.5, 0.1], [0.3, 0.3], [0.7, 0.3], [0.5, 0.5], [0.3, 0.9], [0.7, 0.9]],
+        N: [[0.5, 0.1], [0.4, 0.2], [0.6, 0.2], [0.5, 0.1], [0.4, 0.4], [0.6, 0.4], [0.4, 0.6], [0.6, 0.6], [0.3, 0.9], [0.7, 0.9]],
+        P: [[0.5, 0.1], [0.4, 0.2], [0.6, 0.2], [0.5, 0.1], [0.3, 0.3], [0.7, 0.3], [0.3, 0.9], [0.7, 0.9]],
+    };
+    finalLines.push(templates[type].map(([dx, dy]) => [x + dx * size, y + dy * size]));
 }
-
-function drawKingFilled(x, y, size) {
-  for (let i = 0; i < 10; i++) {
-    const polyline = [
-      [x + size * 0.5, y + size * 0.1 + i * 0.01 * size],
-      [x + size * 0.4, y + size * 0.3 + i * 0.01 * size],
-      [x + size * 0.6, y + size * 0.3 + i * 0.01 * size],
-      [x + size * 0.5, y + size * 0.1 + i * 0.01 * size],
-      [x + size * 0.3, y + size * 0.4 + i * 0.01 * size],
-      [x + size * 0.7, y + size * 0.4 + i * 0.01 * size],
-      [x + size * 0.3, y + size * 0.7 + i * 0.01 * size],
-      [x + size * 0.7, y + size * 0.7 + i * 0.01 * size],
-      [x + size * 0.3, y + size * 0.9 + i * 0.01 * size],
-      [x + size * 0.7, y + size * 0.9 + i * 0.01 * size],
-    ];
-    finalLines.push(polyline);
-  }
+  
+function drawPieceFilled(x, y, size, type) {
+    for (let i = 0; i < 10; i++) {
+        drawPiece(x, y + i * 0.01 * size, size, type);
+    }
 }
-
-function drawQueen(x, y, size) {
-  const polyline = [
-    [x + size * 0.5, y + size * 0.1],
-    [x + size * 0.4, y + size * 0.3],
-    [x + size * 0.6, y + size * 0.3],
-    [x + size * 0.5, y + size * 0.1],
-    [x + size * 0.3, y + size * 0.4],
-    [x + size * 0.7, y + size * 0.4],
-    [x + size * 0.5, y + size * 0.5],
-    [x + size * 0.3, y + size * 0.9],
-    [x + size * 0.7, y + size * 0.9],
-  ];
-  finalLines.push(polyline);
-}
-
-function drawQueenFilled(x, y, size) {
-  for (let i = 0; i < 10; i++) {
-    const polyline = [
-      [x + size * 0.5, y + size * 0.1 + i * 0.01 * size],
-      [x + size * 0.4, y + size * 0.3 + i * 0.01 * size],
-      [x + size * 0.6, y + size * 0.3 + i * 0.01 * size],
-      [x + size * 0.5, y + size * 0.1 + i * 0.01 * size],
-      [x + size * 0.3, y + size * 0.4 + i * 0.01 * size],
-      [x + size * 0.7, y + size * 0.4 + i * 0.01 * size],
-      [x + size * 0.5, y + size * 0.5 + i * 0.01 * size],
-      [x + size * 0.3, y + size * 0.9 + i * 0.01 * size],
-      [x + size * 0.7, y + size * 0.9 + i * 0.01 * size],
-    ];
-    finalLines.push(polyline);
-  }
-}
-
-function drawRook(x, y, size) {
-  const polyline = [
-    [x + size * 0.3, y + size * 0.1],
-    [x + size * 0.7, y + size * 0.1],
-    [x + size * 0.7, y + size * 0.3],
-    [x + size * 0.3, y + size * 0.3],
-    [x + size * 0.3, y + size * 0.7],
-    [x + size * 0.7, y + size * 0.7],
-    [x + size * 0.7, y + size * 0.9],
-    [x + size * 0.3, y + size * 0.9],
-    [x + size * 0.3, y + size * 0.1],
-  ];
-  finalLines.push(polyline);
-}
-
-function drawRookFilled(x, y, size) {
-  for (let i = 0; i < 10; i++) {
-    const polyline = [
-      [x + size * 0.3, y + size * 0.1 + i * 0.01 * size],
-      [x + size * 0.7, y + size * 0.1 + i * 0.01 * size],
-      [x + size * 0.7, y + size * 0.3 + i * 0.01 * size],
-      [x + size * 0.3, y + size * 0.3 + i * 0.01 * size],
-      [x + size * 0.3, y + size * 0.7 + i * 0.01 * size],
-      [x + size * 0.7, y + size * 0.7 + i * 0.01 * size],
-      [x + size * 0.7, y + size * 0.9 + i * 0.01 * size],
-      [x + size * 0.3, y + size * 0.9 + i * 0.01 * size],
-      [x + size * 0.3, y + size * 0.1 + i * 0.01 * size],
-    ];
-    finalLines.push(polyline);
-  }
-}
-
-function drawBishop(x, y, size) {
-  const polyline = [
-    [x + size * 0.5, y + size * 0.1],
-    [x + size * 0.4, y + size * 0.2],
-    [x + size * 0.6, y + size * 0.2],
-    [x + size * 0.5, y + size * 0.1],
-    [x + size * 0.3, y + size * 0.3],
-    [x + size * 0.7, y + size * 0.3],
-    [x + size * 0.5, y + size * 0.5],
-    [x + size * 0.3, y + size * 0.9],
-    [x + size * 0.7, y + size * 0.9],
-  ];
-  finalLines.push(polyline);
-}
-
-function drawBishopFilled(x, y, size) {
-  for (let i = 0; i < 10; i++) {
-    const polyline = [
-      [x + size * 0.5, y + size * 0.1 + i * 0.01 * size],
-      [x + size * 0.4, y + size * 0.2 + i * 0.01 * size],
-      [x + size * 0.6, y + size * 0.2 + i * 0.01 * size],
-      [x + size * 0.5, y + size * 0.1 + i * 0.01 * size],
-      [x + size * 0.3, y + size * 0.3 + i * 0.01 * size],
-      [x + size * 0.7, y + size * 0.3 + i * 0.01 * size],
-      [x + size * 0.5, y + size * 0.5 + i * 0.01 * size],
-      [x + size * 0.3, y + size * 0.9 + i * 0.01 * size],
-      [x + size * 0.7, y + size * 0.9 + i * 0.01 * size],
-    ];
-    finalLines.push(polyline);
-  }
-}
-
-function drawKnight(x, y, size) {
-  const polyline = [
-    [x + size * 0.5, y + size * 0.1],
-    [x + size * 0.4, y + size * 0.2],
-    [x + size * 0.6, y + size * 0.2],
-    [x + size * 0.5, y + size * 0.1],
-    [x + size * 0.4, y + size * 0.4],
-    [x + size * 0.6, y + size * 0.4],
-    [x + size * 0.4, y + size * 0.6],
-    [x + size * 0.6, y + size * 0.6],
-    [x + size * 0.3, y + size * 0.9],
-    [x + size * 0.7, y + size * 0.9],
-  ];
-  finalLines.push(polyline);
-}
-
-function drawKnightFilled(x, y, size) {
-  for (let i = 0; i < 10; i++) {
-    const polyline = [
-      [x + size * 0.5, y + size * 0.1 + i * 0.01 * size],
-      [x + size * 0.4, y + size * 0.2 + i * 0.01 * size],
-      [x + size * 0.6, y + size * 0.2 + i * 0.01 * size],
-      [x + size * 0.5, y + size * 0.1 + i * 0.01 * size],
-      [x + size * 0.4, y + size * 0.4 + i * 0.01 * size],
-      [x + size * 0.6, y + size * 0.4 + i * 0.01 * size],
-      [x + size * 0.4, y + size * 0.6 + i * 0.01 * size],
-      [x + size * 0.6, y + size * 0.6 + i * 0.01 * size],
-      [x + size * 0.3, y + size * 0.9 + i * 0.01 * size],
-      [x + size * 0.7, y + size * 0.9 + i * 0.01 * size],
-    ];
-    finalLines.push(polyline);
-  }
-}
-
-function drawPawn(x, y, size) {
-  const polyline = [
-    [x + size * 0.5, y + size * 0.1],
-    [x + size * 0.4, y + size * 0.2],
-    [x + size * 0.6, y + size * 0.2],
-    [x + size * 0.5, y + size * 0.1],
-    [x + size * 0.3, y + size * 0.3],
-    [x + size * 0.7, y + size * 0.3],
-    [x + size * 0.3, y + size * 0.9],
-    [x + size * 0.7, y + size * 0.9],
-  ];
-  finalLines.push(polyline);
-}
-
-function drawPawnFilled(x, y, size) {
-  for (let i = 0; i < 10; i++) {
-    const polyline = [
-      [x + size * 0.5, y + size * 0.1 + i * 0.01 * size],
-      [x + size * 0.4, y + size * 0.2 + i * 0.01 * size],
-      [x + size * 0.6, y + size * 0.2 + i * 0.01 * size],
-      [x + size * 0.5, y + size * 0.1 + i * 0.01 * size],
-      [x + size * 0.3, y + size * 0.3 + i * 0.01 * size],
-      [x + size * 0.7, y + size * 0.3 + i * 0.01 * size],
-      [x + size * 0.3, y + size * 0.9 + i * 0.01 * size],
-      [x + size * 0.7, y + size * 0.9 + i * 0.01 * size],
-    ];
-    finalLines.push(polyline);
-  }
-}
-
+  
 drawLines(finalLines);
+  
